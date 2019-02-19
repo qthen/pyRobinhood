@@ -1,5 +1,6 @@
 '''
-Main class for interacting with Robinhood API, wraps the Robinhood API and queries.
+Main class for interacting with Robinhood API, wraps the Robinhood API and
+queries.
 '''
 
 from pyRobinhood.Order import Order
@@ -10,8 +11,10 @@ from pyRobinhood.exceptions import LoginError, SymbolNotFound, APIError, NotLogg
 class Robinhood(object):
 
 	'''
-	Creates an instance that interacts with the Robinhood API and exposes common front end operations. Loads the environment constants from ConfigService (so construction can fail).
-	Inputs:
+	Creates an instance that interacts with the Robinhood API and exposes
+	common front end operations. Loads the environment constants from
+	ConfigService (so construction can fail). 
+	Inputs: 
 		timeout (Int) - Timeout for API requests.
 	'''
 	def __init__(self, timeout = 15):
@@ -35,13 +38,14 @@ class Robinhood(object):
 		return self.TOKEN is not None
 
 	'''
-	Request a token from the front end to use for methods that require authentication
-	Inputs:
+	Request a token from the front end to use for methods that require
+	authentication 
+	Inputs: 
 		username (String) - The username to login with.
-		password (String) - The password to login with.
-	Returns:
-		bool - True if login successful
-	Throws:
+		password (String) - The password to login with. 
+	Returns: 
+		bool - True if login successful 
+	Throws: 
 		LoginError - When login is not successful
 	'''
 	def login(self, username, password):
@@ -73,7 +77,8 @@ class Robinhood(object):
 	def logout(self):
 		if self.logged_in():
 			headers = { 'Authorization': 'Bearer ' + self.TOKEN }
-			r = requests.post("https://api.robinhood.com/oauth2/revoke_token/", headers=headers)
+			r = requests.post("https://api.robinhood.com/oauth2/revoke_token/",
+				headers=headers)
 			if r.status_code == 200:
 				return True
 			else:
@@ -99,7 +104,9 @@ class Robinhood(object):
 	Throws:
 		OrderMayCauseDayTrade - If an order may cause a day trade as told by Robinhood API.
 	'''
-	def _place_order(self, symbol, type, time_in_force, trigger, price, stop_price, quantity, side, extended_hours = True, override_day_trade_checks = False):
+	def _place_order(self, symbol, type, time_in_force, trigger, price,
+		stop_price, quantity, side, extended_hours = True,
+		override_day_trade_checks = False):
 		if self.logged_in():
 			instrument_url = self._instrument_url_by_symbol(symbol)
 			account_url = self._account_url()
@@ -130,9 +137,13 @@ class Robinhood(object):
 					raise OrderFailed("Order failed since API returned an error. Dump: {}".format(e))
 
 			if 'id' in result:
-				return Order(result['id'], result['fees'], result['cancel'], result['cumulative_quantity'], result['reject_reason'], result['state'], result['url'], result['updated_at'], result['created_at'], result['average_price'])
+				return Order(result['id'], result['fees'], result['cancel'],
+					result['cumulative_quantity'], result['reject_reason'],
+					result['state'], result['url'], result['updated_at'],
+					result['created_at'], result['average_price'])
 			else:
-				raise RuntimeError("Order was sent but failed to find the id. Dump of order result: ".format(result))
+				raise RuntimeError("Order was sent but failed to find the"\
+					" id. Dump of order result: ".format(result))
 
 		else:
 			raise LoginError()
@@ -169,7 +180,11 @@ class Robinhood(object):
 		if self.logged_in():
 			# Market orders are limit orders with the price collared 5%, get the last trade price.
 			symbol_quote = self.get_quote(symbol)
-			result = self._place_order(symbol = symbol, type='market', time_in_force = time_in_force, trigger = 'immediate', price = symbol_quote.last_trade_price, stop_price = None, quantity = quantity, side = 'sell', extended_hours = extended_hours)
+			result = self._place_order(symbol = symbol, type='market',
+				time_in_force = time_in_force, trigger = 'immediate',
+				price = symbol_quote.last_trade_price, stop_price = None,
+				quantity = quantity, side = 'sell',
+				extended_hours = extended_hours)
 		else:
 			raise LoginError()
 
@@ -178,7 +193,10 @@ class Robinhood(object):
 	'''
 	def place_limit_buy(self, symbol, quantity, price, time_in_force = 'gtc', extended_hours = True):
 		if self.logged_in():
-			result = self._place_order(symbol = symbol, type='limit', time_in_force = time_in_force, trigger = 'immediate', price = price, stop_price = None, quantity = quantity, side = 'buy', extended_hours = extended_hours)
+			result = self._place_order(symbol = symbol, type='limit',
+				time_in_force = time_in_force, trigger = 'immediate',
+				price = price, stop_price = None, quantity = quantity,
+				side = 'buy', extended_hours = extended_hours)
 		else:
 			raise LoginError()
 
@@ -187,7 +205,10 @@ class Robinhood(object):
 	'''
 	def place_limit_sell(self, symbol, quantity, price, time_in_force = 'gtc', extended_hours = True):
 		if self.logged_in():
-			result = self._place_order(symbol = symbol, type='limit', time_in_force = time_in_force, trigger = 'immediate', price = price, stop_price = None, quantity = quantity, side = 'sell', extended_hours = extended_hours)
+			result = self._place_order(symbol = symbol, type='limit',
+				time_in_force = time_in_force, trigger = 'immediate',
+				price = price, stop_price = None, quantity = quantity,
+				side = 'sell', extended_hours = extended_hours)
 		else:
 			raise LoginError()
 
@@ -202,7 +223,13 @@ class Robinhood(object):
 		payload = { 'symbol': "MSFT" }
 		headers = {}
 		result = self._robinhood_api.query(Endpoints.QUOTE, payload, headers)
-		return Quote(result['ask_price'], result['ask_size'], result['bid_price'], result['bid_size'], result['last_trade_price'], result['last_extended_hours_trade_price'], result['previous_close'], result['adjusted_previous_close'], result['previous_close_date'], result['symbol'], result['trading_halted'], result['updated_at'])
+		return Quote(result['ask_price'], result['ask_size'],
+			result['bid_price'], result['bid_size'],
+			result['last_trade_price'], 
+			result['last_extended_hours_trade_price'],
+			result['previous_close'], result['adjusted_previous_close'],
+			result['previous_close_date'], result['symbol'],
+			result['trading_halted'], result['updated_at'])
 
 	'''
 	Gets the account URL of the current logged in user.
@@ -213,7 +240,8 @@ class Robinhood(object):
 			headers = { 'Authorization': 'Bearer ' + self.TOKEN }
 
 			# Results returns an array of results, despite the fact that there should be aone to one relationship for user to account url.
-			result = self._robinhood_api.query(Endpoints.ACCOUNT, payload, headers)
+			result = self._robinhood_api.query(Endpoints.ACCOUNT, payload,
+				headers)
 			return result['results'][0]['url']
 
 		else:
@@ -234,7 +262,8 @@ class Robinhood(object):
 		payload = { 'symbol': symbol }
 		headers = {}
 
-		result = self._robinhood_api.query(Endpoints.BASIC_INSTRUMENT_INFO, payload, headers)
+		result = self._robinhood_api.query(Endpoints.BASIC_INSTRUMENT_INFO,
+			payload, headers)
 
 		# Make sure the data is there.
 		if 'results' in result and len(result['results']) > 0:
@@ -244,7 +273,9 @@ class Robinhood(object):
 			if len(results) == 1:
 				return results[0]
 			else:
-				raise RuntimeError("Expected only one search result when searching for instrument info for symbol: {}.".format(symbol))
+				raise RuntimeError("Expected only one search result when "\
+					"searching for instrument info for symbol: {}.".format(
+						symbol))
 		else:
 			raise SymbolNotFound("Not results for searching {}".format(symbol))
 

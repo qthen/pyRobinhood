@@ -17,7 +17,8 @@ class Order(object):
 		created_at (ISO 8601) - Time the order was placed at.
 		average_price (Float) - Average price of all shares executed so far.
 	'''
-	def __init__(self, id, fees, cancel, cumulative_quantity, reject_reason, state, url, updated_at, created_at, average_price):
+	def __init__(self, id, fees, cancel, cumulative_quantity, reject_reason,
+		state, url, updated_at, created_at, average_price):
 		self.id = id
 		self.fees = fees
 		self.cancel = cancel
