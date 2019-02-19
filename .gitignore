@@ -1,0 +1,5 @@
+config/user_info.json
+*__pycache__*
+test_buy.py
+main.py
+setup.py
