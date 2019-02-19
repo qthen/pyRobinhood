@@ -60,7 +60,8 @@ class Robinhood(object):
 		headers = {}
 
 		try:
-			result = self._robinhood_api.query(Endpoints.LOGIN, payload, headers)
+			result = self._robinhood_api.query(Endpoints.LOGIN, payload, 
+				headers)
 			self.TOKEN = result['access_token']
 			self.USERNAME = username
 			return True
@@ -94,7 +95,8 @@ class Robinhood(object):
 		time_in_force (String) - gfd|gtc|ioc|opg.
 		trigger (String) - immediate or stop.
 		price (Float) - The price of order (max if buy, min if sell).
-		stop_price (Float) - The price when a stop order triggers (only relevant when trigger = 'stop')
+		stop_price (Float) - The price when a stop order triggers (only 
+		relevant when trigger = 'stop')
 		quantity (Int) - The number of shares involved in the transaction.
 		side (String) - buy|sell.
 		extended_hours (Bool) - Should execute during pre/after hours.
@@ -102,7 +104,8 @@ class Robinhood(object):
 	Returns:
 		(Order) - Contains the information of the resulting order.
 	Throws:
-		OrderMayCauseDayTrade - If an order may cause a day trade as told by Robinhood API.
+		OrderMayCauseDayTrade - If an order may cause a day trade as told by 
+		Robinhood API.
 	'''
 	def _place_order(self, symbol, type, time_in_force, trigger, price,
 		stop_price, quantity, side, extended_hours = True,
@@ -131,7 +134,8 @@ class Robinhood(object):
 				result = self._robinhood_api.query(Endpoints.ORDERS, payload, headers)
 			except APIError as e:
 				# Placing an order typically results in an 201 status code, but error status codes can be returned. Here are the cases:
-				if e.err_response and 'detail': in e.err_response and e.err_response['detail'] == "Sell may cause day trade.":
+				if e.err_response and 'detail': in e.err_response and 
+				e.err_response['detail'] == "Sell may cause day trade.":
 					raise OrderMayCauseDayTrade()
 				else:
 					raise OrderFailed("Order failed since API returned an error. Dump: {}".format(e))
@@ -151,7 +155,10 @@ class Robinhood(object):
 	'''
 	Places a Robinhood MARKET BUY order.
 
-	This method relies on the fact that fetching the last trade price from Robinhood works (which is not guaranteed, there IS throttling - up to 300 seconds), thus you should always prefer limit orders where you must explicitly specify a price.
+	This method relies on the fact that fetching the last trade price from 
+	Robinhood works (which is not guaranteed, there IS throttling - up to 300 
+	seconds), thus you should always prefer limit orders where you must 
+	explicitly specify a price.
 	Inputs:
 		symbol (String) - The symbol of the instrument to buy.
 		quantity (Int) - The number of shares to buy.
@@ -163,7 +170,11 @@ class Robinhood(object):
 			# Market orders are limit orders with the price collared 5%, get the last trade price.
 			symbol_quote = self.get_quote(symbol)
 			try:
-				result = self._place_order(symbol = symbol, type='market', time_in_force = time_in_force, trigger = 'immediate', price = symbol_quote.last_trade_price, stop_price = None, quantity = quantity, side = 'buy', extended_hours = extended_hours)
+				result = self._place_order(symbol = symbol, type='market', 
+					time_in_force = time_in_force, trigger = 'immediate', 
+					price = symbol_quote.last_trade_price, stop_price = None,
+					quantity = quantity, side = 'buy', 
+					extended_hours = extended_hours)
 			except APIError as e:
 				# For some reason, market orders can return non-200 status code irrespective of the result of the order, check if the reject reason is null
 				# if 'reject_reason' in e.err_response:
@@ -176,7 +187,8 @@ class Robinhood(object):
 	'''
 	Places a Robinhood MARKET SELL order.
 	'''
-	def place_market_sell(self, symbol, quantity, time_in_force = 'gtc', extended_hours = True):
+	def place_market_sell(self, symbol, quantity, time_in_force = 'gtc', 
+		extended_hours = True):
 		if self.logged_in():
 			# Market orders are limit orders with the price collared 5%, get the last trade price.
 			symbol_quote = self.get_quote(symbol)
@@ -191,7 +203,8 @@ class Robinhood(object):
 	'''
 	Places a Robinhood LIMIT BUY order.
 	'''
-	def place_limit_buy(self, symbol, quantity, price, time_in_force = 'gtc', extended_hours = True):
+	def place_limit_buy(self, symbol, quantity, price, time_in_force = 'gtc', 
+		extended_hours = True):
 		if self.logged_in():
 			result = self._place_order(symbol = symbol, type='limit',
 				time_in_force = time_in_force, trigger = 'immediate',
@@ -203,7 +216,8 @@ class Robinhood(object):
 	'''
 	Places a Robinhood LIMIT SELL order.
 	'''
-	def place_limit_sell(self, symbol, quantity, price, time_in_force = 'gtc', extended_hours = True):
+	def place_limit_sell(self, symbol, quantity, price, time_in_force = 'gtc', 
+		extended_hours = True):
 		if self.logged_in():
 			result = self._place_order(symbol = symbol, type='limit',
 				time_in_force = time_in_force, trigger = 'immediate',
@@ -239,7 +253,8 @@ class Robinhood(object):
 			payload = {}
 			headers = { 'Authorization': 'Bearer ' + self.TOKEN }
 
-			# Results returns an array of results, despite the fact that there should be aone to one relationship for user to account url.
+			# Results returns an array of results, despite the fact that there 
+			# should be an one to one relationship for user to account url.
 			result = self._robinhood_api.query(Endpoints.ACCOUNT, payload,
 				headers)
 			return result['results'][0]['url']
