@@ -27,10 +27,10 @@ if (robinhood.login("myemail@email.com", "mypassword")) {
 	robinhood.place_market_buy(symbol = 'FB', quantity = 100)
 
 	# Market SELL order.
-	robinhood.place_market_sell(symbol = 'AMZN', quantity = 100)
+	robinhood.place_market_sell(symbol = 'AAPL', quantity = 100)
 
 	# LIMIT BUY order.
-	robinhood.place_limit_buy(symbol = 'AAPL', quantity = 100, price = 100.00)
+	robinhood.place_limit_buy(symbol = 'NFLX', quantity = 100, price = 100.00)
 
 	# LIMIT SELL order.
 	robinhood.place_limit_sell(symbol = 'GOOG', quantity = 100, price = 1000.00)
