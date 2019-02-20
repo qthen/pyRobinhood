@@ -131,14 +131,16 @@ class Robinhood(object):
 			headers = { 'Authorization': 'Bearer ' + self.TOKEN }
 
 			try:
-				result = self._robinhood_api.query(Endpoints.ORDERS, payload, headers)
+				result = self._robinhood_api.query(Endpoints.ORDERS, payload, 
+					headers)
 			except APIError as e:
-				# Placing an order typically results in an 201 status code, but error status codes can be returned. Here are the cases:
-				if e.err_response and 'detail': in e.err_response and 
-				e.err_response['detail'] == "Sell may cause day trade.":
+				# Placing an order typically results in an 201 status code, 
+				# but error status codes can be returned. Here are the cases:
+				if e.err_response and 'detail' in e.err_response and e.err_response['detail'] == "Sell may cause day trade.":
 					raise OrderMayCauseDayTrade()
 				else:
-					raise OrderFailed("Order failed since API returned an error. Dump: {}".format(e))
+					raise OrderFailed("Order failed since API returned an "\
+						"error. Dump: {}".format(e))
 
 			if 'id' in result:
 				return Order(result['id'], result['fees'], result['cancel'],
@@ -165,9 +167,11 @@ class Robinhood(object):
 		time_in_force (String) - gfd|gtc|ioc|opg.
 		extended_hours (Bool) - Should execute during pre/after hours.
 	'''
-	def place_market_buy(self, symbol, quantity, time_in_force = 'gtc', extended_hours = True):
+	def place_market_buy(self, symbol, quantity, time_in_force = 'gtc', 
+		extended_hours = True):
 		if self.logged_in():
-			# Market orders are limit orders with the price collared 5%, get the last trade price.
+			# Market orders are limit orders with the price collared 5%, get 
+			# the last trade price.
 			symbol_quote = self.get_quote(symbol)
 			try:
 				result = self._place_order(symbol = symbol, type='market', 
@@ -176,7 +180,9 @@ class Robinhood(object):
 					quantity = quantity, side = 'buy', 
 					extended_hours = extended_hours)
 			except APIError as e:
-				# For some reason, market orders can return non-200 status code irrespective of the result of the order, check if the reject reason is null
+				# For some reason, market orders can return non-200 status 
+				# code irrespective of the result of the order, check if the
+				# reject reason is null
 				# if 'reject_reason' in e.err_response:
 				pass
 
@@ -190,7 +196,8 @@ class Robinhood(object):
 	def place_market_sell(self, symbol, quantity, time_in_force = 'gtc', 
 		extended_hours = True):
 		if self.logged_in():
-			# Market orders are limit orders with the price collared 5%, get the last trade price.
+			# Market orders are limit orders with the price collared 5%, get 
+			# the last trade price.
 			symbol_quote = self.get_quote(symbol)
 			result = self._place_order(symbol = symbol, type='market',
 				time_in_force = time_in_force, trigger = 'immediate',
@@ -295,7 +302,8 @@ class Robinhood(object):
 			raise SymbolNotFound("Not results for searching {}".format(symbol))
 
 	'''
-	Given a symbol, returns the instrument URL (typically used for placing orders).
+	Given a symbol, returns the instrument URL (typically used for placing 
+	orders).
 	Input:
 		symbol (String) - The symbol of the interested instrument.
 	Returns:

@@ -13,7 +13,7 @@ class APIError(Exception):
 
 		super(APIError, self).__init__(message)
 
-		self.err_response = response
+		self.err_response = err_response
 
 # Raised when the user issues an authenticated method without being logged in.
 class NotLoggedIn(Exception):

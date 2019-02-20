@@ -45,7 +45,7 @@ class TestAuthorizedCalls(unittest.TestCase):
 		payload = {}
 		headers = { 'Authorization': 'Bearer ' + TestAuthorizedCalls._access_token}
 
-		result = self._robinhood_api.query(Endpoints.ACCOUNT_ID, payload, headers)
+		result = self._robinhood_api.query(Endpoints.ACCOUNT, payload, headers)
 
 		# Expect sensical fields from the result.
 		assert('id' in result)

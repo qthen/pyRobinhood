@@ -79,7 +79,7 @@ class RobinhoodAPI(object):
 				endpoint))
 
 		# Raise APIError if status code is not 200
-		if r.status_code == 200 || r.status_code == 201:
+		if r.status_code == 200 or r.status_code == 201:
 			return r.json()
 		else:
 			raise APIError("Querying endpoint {} returned non-200 HTTP "\
