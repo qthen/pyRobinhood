@@ -1,19 +1,21 @@
 # pyRobinhood
 
-Python framework to interact with Robinhood's API presented in front end style.
+Python framework for interacting with Robinhood's API.
 
 ## Supports
 
-1. Market buy/sell, limit buy/sell
-2. Quotes
+1. Market BUY/SELL orders.
+2. LIMIT BUY/SELL orders.
+3. Stock quotes.
 
-## Does not support
+## Upcoming
 
-1. Accounts with two-factor authentication enabled.
+1. Stop loss orders.
+2. Accounts with two-factor authentication enabled.
 
 ## Usage
 
-pyRobinhood exposes trading orders in the same way they are presented in Robinhood front end. 
+pyRobinhood exposes trading orders in the same way they are presented in Robinhood front end. `Robinhood` exposes these through `place_market_buy`, `place_market_sell`, `place_limit_buy`, and `place_limit_sell`. First, a login request must be successfully made before any trades can be done. Below is a simple login with buy/sell orders being made. 
 
 ```
 from pyRobinhood.Robinhood import Robinhood
